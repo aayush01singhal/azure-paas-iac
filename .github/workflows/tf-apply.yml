@@ -24,6 +24,8 @@ permissions:
   id-token: write
 
 jobs:
+  Deploy:
+     uses: aayush01singhal/common-workflows-iac/.github/workflows/central.yml@main
   apply:
     name: "Apply - ${{ inputs.target_env }} | ${{ inputs.change_ref }}"
     runs-on: [self-hosted, Windows]
