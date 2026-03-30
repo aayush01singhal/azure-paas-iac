@@ -1,5 +1,4 @@
-
-name: Terraform plan
+name: Terraform Plan
 
 on:
   workflow_call:
@@ -7,26 +6,34 @@ on:
       target_env:
         required: true
         type: string
+
       selected_branch:
         required: true
         type: string
+
       working_directory:
         required: true
         type: string
+
       change_ref:
         required: true
         type: string
+
       change_reason:
         required: true
         type: string
+
       rollback_plan:
         required: true
         type: string
-    outputs:
-      plan_commit_sha:
-        value: ${{ jobs.plan.outputs.plan_commit_sha }}
-      plan_artifact_name:
-        value: ${{ jobs.plan.outputs.plan_artifact_name }}
+
+    secrets:
+      AZURE_CLIENT_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
 
 permissions:
   contents: read
@@ -34,51 +41,17 @@ permissions:
 
 jobs:
   plan:
-    runs-on: windows-latest
-    environment: ${{ inputs.target_env }}
-
-    outputs:
-      plan_commit_sha: ${{ steps.sha.outputs.sha }}
-      plan_artifact_name: ${{ steps.art.outputs.name }}
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.selected_branch }}
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      
-      - name: Install Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.6.6
-          terraform_wrapper: false
-
-
-      - id: sha
-        shell: powershell
-        run: |
-          "sha=$(git rev-parse HEAD)" >> $env:GITHUB_OUTPUT
-
-      - id: art
-        shell: powershell
-        run: |
-          "name=tfplan-${{ github.run_id }}" >> $env:GITHUB_OUTPUT
-
-      - uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.ARM_CLIENT_ID }}
-          tenant-id: ${{ secrets.ARM_TENANT_ID }}
-          subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-
-      - shell: powershell
+      - name: Terraform Init
         working-directory: ${{ inputs.working_directory }}
-        run: |
-          terraform init
-          terraform fmt -check
-          terraform validate
-          terraform plan -out=tfplan.binary
+        run: terraform init
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.art.outputs.name }}
-          path: ${{ inputs.working_directory }}/tfplan.binary
+      - name: Terraform Plan
+        working-directory: ${{ inputs.working_directory }}
+        run: terraform plan
+``
