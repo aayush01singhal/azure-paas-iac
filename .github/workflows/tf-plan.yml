@@ -47,11 +47,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6
+
       - name: Terraform Init
         working-directory: ${{ inputs.working_directory }}
-        run: terraform init
+        run: terraform init -input=false
+
+      - name: Terraform Format Check
+        working-directory: ${{ inputs.working_directory }}
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Validate
+        working-directory: ${{ inputs.working_directory }}
+        run: terraform validate
 
       - name: Terraform Plan
         working-directory: ${{ inputs.working_directory }}
-        run: terraform plan
-``
+        run: terraform plan -input=false
