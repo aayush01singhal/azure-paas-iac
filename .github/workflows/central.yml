@@ -33,6 +33,7 @@ on:
       
       change_ticket:          
         required: true
+        default: "Change/CR ticket number for audit and approval"
 
 
       rollback_plan:
