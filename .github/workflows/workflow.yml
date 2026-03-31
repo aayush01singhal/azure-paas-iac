@@ -9,7 +9,7 @@ on:
         description: "Select Environment (uat, dev, sit, production, drhub)"
         required: true
         type: choice
-        options: [uat, sit, production, drhub]
+        options: [uat, sit, dev, production, drhub]
 
       working_directory:
         description: "Terraform config directory path."
