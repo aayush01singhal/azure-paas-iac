@@ -30,6 +30,10 @@ on:
         description: "Reason for change"
         required: true
         default: "standard-deployment"
+      
+      change_ticket:          
+        required: true
+
 
       rollback_plan:
         description: "Rollback strategy"
