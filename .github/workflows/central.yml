@@ -19,27 +19,27 @@ on:
       selected_branch:
         description: "Git branch to deploy from"
         required: true
-        default: "main"
+        default: " "
 
       change_ref:
         description: "Change or ticket reference"
         required: true
-        default: "manual"
+        
 
       change_reason:
         description: "Reason for change"
         required: true
-        default: "standard-deployment"
+        
       
       change_ticket:          
         required: true
-        default: "Change/CR ticket number for audit and approval"
+        description: "Change "
 
 
       rollback_plan:
         description: "Rollback strategy"
         required: true
-        default: "reapply-previous-state"   
+          
 
 
 permissions:
