@@ -19,20 +19,29 @@ on:
       selected_branch:
         description: "Git branch to deploy from"
         required: true
-        default: " "
+        default: "main"
 
       change_ref:
         description: "Change or ticket reference"
         required: true
-        
+        default: "manual"
+
       change_reason:
         description: "Reason for change"
-        required: true    
-           
+        required: true
+        default: "standard-deployment"
+      
+      change_ticket:          
+        required: true
+        default: "Change/CR ticket number for audit and approval"
+
+
       rollback_plan:
         description: "Rollback strategy"
         required: true
-        
+        default: "reapply-previous-state"   
+
+
 permissions:
   contents: read
   id-token: write
@@ -73,8 +82,12 @@ jobs:
     needs: plan
     uses: aayush01singhal/common-workflows-iac/.github/workflows/approval.gate.yml@main
     with:           
-      target_env: ${{ inputs.target_env }}     
-      change_reason: ${{ inputs.change_reason }} 
+      target_env: ${{ inputs.target_env }}
+      change_ticket: ${{ inputs.change_ticket }}
+      change_reason: ${{ inputs.change_reason }}
+
+
+
   
   apply:
     name: "Apply"
@@ -90,5 +103,3 @@ jobs:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-
