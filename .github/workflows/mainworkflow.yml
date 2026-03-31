@@ -25,23 +25,14 @@ on:
         description: "Change or ticket reference"
         required: true
         
-
       change_reason:
         description: "Reason for change"
-        required: true
-        
-      
-      change_ticket:          
-        required: true
-        description: "Change "
-
-
+        required: true    
+           
       rollback_plan:
         description: "Rollback strategy"
         required: true
-          
-
-
+        
 permissions:
   contents: read
   id-token: write
