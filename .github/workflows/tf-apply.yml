@@ -6,24 +6,18 @@ on:
       target_env:
         required: true
         type: string
-
       working_directory:
         required: true
         type: string
-
       change_ref:
         required: true
         type: string
-
       change_reason:
         required: true
         type: string
-
       rollback_plan:
         required: true
         type: string
-    
-
     secrets:
       AZURE_CLIENT_ID:
         required: true
@@ -38,15 +32,16 @@ permissions:
 
 jobs:
   apply:
-    runs-on: ubuntu-latest
-
+    runs-on: windows-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6
 
       - name: Terraform Init
         working-directory: ${{ inputs.working_directory }}
-        run: terraform init
+        run: terraform init -input=false
 
       - name: Terraform Apply
         working-directory: ${{ inputs.working_directory }}
