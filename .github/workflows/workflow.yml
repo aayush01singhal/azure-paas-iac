@@ -6,10 +6,10 @@ on:
   workflow_dispatch:
     inputs:
       target_env:
-        description: "Select Environment (uat, dev, sit, production, drhub)"
+        description: "Select Environment (uat, dev, sit, development, production, drhub)"
         required: true
         type: choice
-        options: [uat, sit, dev, production, drhub]
+        options: [uat, sit, dev, production, drhub, development]
 
       working_directory:
         description: "Terraform config directory path."
