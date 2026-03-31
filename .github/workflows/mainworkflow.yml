@@ -73,12 +73,8 @@ jobs:
     needs: plan
     uses: aayush01singhal/common-workflows-iac/.github/workflows/approval.gate.yml@main
     with:           
-      target_env: ${{ inputs.target_env }}
-      change_ticket: ${{ inputs.change_ticket }}
-      change_reason: ${{ inputs.change_reason }}
-
-
-
+      target_env: ${{ inputs.target_env }}     
+      change_reason: ${{ inputs.change_reason }} 
   
   apply:
     name: "Apply"
