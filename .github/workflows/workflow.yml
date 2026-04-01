@@ -54,7 +54,7 @@ jobs:
     uses: Aayu1983/centeral-repo/.github/workflows/plan.tf.yml@main
     with:
       target_env: ${{ inputs.target_env }}
-      selected_branch: ${{ github.ref_name }}
+      #selected_branch: ${{ github.ref_name }}
       working_directory: ${{ inputs.working_directory }}
       change_ref: ${{ inputs.change_ref }}
       change_reason: ${{ inputs.change_reason }}
