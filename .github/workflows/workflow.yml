@@ -1,37 +1,35 @@
-name: "Terraform Infrastructure Deployment"
+name: "Workflow for Terraform Infra Deployment"
 
-run-name: "TF ${{ inputs.target_env }}"
+run-name: "TF ${{ inputs.target_env }} | ${{ inputs.change_ref }} | @${{ github.actor }} | ${{ github.ref_name }}"
 
 on:
   workflow_dispatch:
     inputs:
       target_env:
-        description: "Select Environment (uat, dev, sit, development, production, drhub)"
+        description: "Select Environment (uat, sit, production, drhub)"
         required: true
         type: choice
-        options: [uat, sit, dev, production, drhub, development]
+        options: [uat, sit, production, drhub]
 
       working_directory:
         description: "Terraform config directory path."
         required: true
         default: "."
-        
-      selected_branch:
-        description: "Git branch to deploy from"
-        required: true        
 
       change_ref:
-        description: "Change or ticket reference"
-        required: true        
+        description: "Change referance ID."
+        required: true
+        type: string
 
       change_reason:
-        description: "Reason for change"
-        required: true         
-      
-      rollback_plan:
-        description: "Rollback strategy"
-        required: true       
+        description: "Reason for change."
+        required: true
+        type: string
 
+      rollback_plan:
+        description: "Rollback plan."
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -44,8 +42,8 @@ concurrency:
 jobs:
   preflight:
     name: "Preflight"
-    uses: aayush01singhal/common-workflows-iac/.github/workflows/preflight_checks.yml@main
-
+    uses: Aayu1983/centeral-repo/.github/workflows/Preflight.yml@main
+    
     with:
       target_env: ${{ inputs.target_env }}
       working_directory: ${{ inputs.working_directory }}
@@ -53,40 +51,33 @@ jobs:
   plan:
     name: "Plan"
     needs: preflight
-    uses: aayush01singhal/common-workflows-iac/.github/workflows/tf-plan.yml@main
+    uses: Aayu1983/centeral-repo/.github/workflows/plan.tf.yml@main
     with:
       target_env: ${{ inputs.target_env }}
+      selected_branch: ${{ github.ref_name }}
       working_directory: ${{ inputs.working_directory }}
-      selected_branch: ${{ inputs.selected_branch }}
       change_ref: ${{ inputs.change_ref }}
       change_reason: ${{ inputs.change_reason }}
       rollback_plan: ${{ inputs.rollback_plan }}
-
-
-    secrets:
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    secrets: inherit
 
   approval:
     name: "Approval gate"
     needs: plan
-    uses: aayush01singhal/common-workflows-iac/.github/workflows/approval.gate.yml@main
-    with:           
-      target_env: ${{ inputs.target_env }}      
+    uses: Aayu1983/centeral-repo/.github/workflows/approver.yml@main
+    with:
+      target_env: ${{ inputs.target_env }}
+      change_ref: ${{ inputs.change_ref }}
       change_reason: ${{ inputs.change_reason }}
-  
+
   apply:
     name: "Apply"
     needs: [plan, approval]
-    uses: aayush01singhal/common-workflows-iac/.github/workflows/tf-apply.yml@main
+    uses: Aayu1983/centeral-repo/.github/workflows/apply.tf.yml@main
     with:
       target_env: ${{ inputs.target_env }}
-      working_directory: ${{ inputs.working_directory }}      
+      working_directory: ${{ inputs.working_directory }}
+      plan_commit_sha: ${{ github.sha }}
+      plan_artifact_name: "tf-plan-${{ inputs.target_env }}-${{ github.run_id }}"
       change_ref: ${{ inputs.change_ref }}
-      change_reason: ${{ inputs.change_reason }}
-      rollback_plan: ${{ inputs.rollback_plan }}
-    secrets:
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    secrets: inherit
