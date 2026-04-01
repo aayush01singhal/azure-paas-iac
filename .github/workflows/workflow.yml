@@ -43,7 +43,7 @@ concurrency:
 jobs:
   preflight:
     name: "Preflight"
-    uses: Aayu1983/centeral-repo/.github/workflows/Preflight.yml@main
+    uses: aayush01singhal/common-workflows-iac/.github/workflows/preflight_checks.yml@main
     
     with:
       target_env: ${{ inputs.target_env }}
@@ -52,7 +52,7 @@ jobs:
   plan:
     name: "Plan"
     needs: preflight
-    uses: Aayu1983/centeral-repo/.github/workflows/plan.tf.yml@main
+    uses: aayush01singhal/common-workflows-iac/.github/workflows/tf-plan.yml@main
     with:
       target_env: ${{ inputs.target_env }}
       selected_branch: ${{ github.ref_name }}
@@ -65,7 +65,7 @@ jobs:
   approval:
     name: "Approval gate"
     needs: plan
-    uses: Aayu1983/centeral-repo/.github/workflows/approver.yml@main
+    uses: aayush01singhal/common-workflows-iac/.github/workflows/approval.gate.yml@main
     with:
       target_env: ${{ inputs.target_env }}
       change_ref: ${{ inputs.change_ref }}
@@ -74,7 +74,7 @@ jobs:
   apply:
     name: "Apply"
     needs: [plan, approval]
-    uses: Aayu1983/centeral-repo/.github/workflows/apply.tf.yml@main
+    uses: aayush01singhal/common-workflows-iac/.github/workflows/tf-apply.yml@main
     with:
       target_env: ${{ inputs.target_env }}
       working_directory: ${{ inputs.working_directory }}
