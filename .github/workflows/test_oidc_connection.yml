@@ -8,6 +8,7 @@ permissions:
 jobs:
   test:
     runs-on: windows-latest
+    environment: dev
     steps:
       - name: Azure Login
         uses: azure/login@v2
